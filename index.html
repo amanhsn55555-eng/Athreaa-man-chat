@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>الأثرياء • منصتي</title>
+  <!-- الخطوط والأيقونات -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+  /* إخفاء سهم الرجوع في الهيدر */
+.back-btn { display: none !important; }
+
+/* إخفاء سهم الخروج في الملف الشخصي */
+.modal-sheet span[onclick*="closeModal"] { display: none !important; }
+  /* إخفاء الهيدر كاملاً */
+.header { display: none !important; }
+
+/* إخفاء إجمالي الثروة */
+.total-wealth { display: none !important; }
+    body {
+      
+      background: #0a0e14;
+      min-height: 100vh;
+      font-family: 'Tajawal', 'Cairo', sans-serif;
+      padding: 16px;
+      color: #f8fafc;
+    }
+
+    .container {
+      
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* ========== الهيدر ========== */
+    .header {
+      gradient(145deg, #f8fafc, #e2e8f0) !important; border: none !important; box-shadow: inset 2px 2px 5px #ffffff, inset -2px -2px 5px #94a3b8, 3px 3px 8px rgba(0,0,0,0.1), -1px -1px 4px rgba(255,255,255,0.6) !important; border-radius: 30px !important; padding: 2px 2px 2px 10px !important; display: flex; align-items: center;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding: 10px 0;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #ffd966, #ffb347);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .back-btn {
+      gradient(145deg, #f8fafc, #e2e8f0) !important; border: none !important; box-shadow: inset 2px 2px 5px #ffffff, inset -2px -2px 5px #94a3b8, 3px 3px 8px rgba(0,0,0,0.1), -1px -1px 4px rgba(255,255,255,0.6) !important; border-radius: 30px !important; padding: 2px 2px 2px 10px !important; display: flex; align-items: center;
+      width: 45px;
+      height: 45px;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #94a3b8;
+      font-size: 20px;
+      transition: all 0.2s;
+      border: 1px solid rgba(255, 215, 100, 0.15);
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 215, 100, 0.1);
+      color: #ffd966;
+    }
+
+    /* ========== ملخص الثروة ========== */
+    .total-wealth {
+      gradient(145deg, #f8fafc, #e2e8f0) !important; border: none !important; box-shadow: inset 2px 2px 5px #ffffff, inset -2px -2px 5px #94a3b8, 3px 3px 8px rgba(0,0,0,0.1), -1px -1px 4px rgba(255,255,255,0.6) !important; border-radius: 30px !important; padding: 2px 2px 2px 10px !important; display: flex; align-items: center;
+      background: rgba(16, 22, 30, 0.95);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 60px;
+      padding: 14px 22px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 215, 100, 0.15) inset;
+      border: 1px solid rgba(255, 215, 100, 0.2);
+    }
+
+    .total-wealth-label {
+      gradient(145deg, #f8fafc, #e2e8f0) !important; border: none !important; box-shadow: inset 2px 2px 5px #ffffff, inset -2px -2px 5px #94a3b8, 3px 3px 8px rgba(0,0,0,0.1), -1px -1px 4px rgba(255,255,255,0.6) !important; border-radius: 30px !important; padding: 2px 2px 2px 10px !important; display: flex; align-items: center;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      color: #ffd966;
+    }
+
+    .total-wealth-value {
+      gradient(145deg, #f8fafc, #e2e8f0) !important; border: none !important; box-shadow: inset 2px 2px 5px #ffffff, inset -2px -2px 5px #94a3b8, 3px 3px 8px rgba(0,0,0,0.1), -1px -1px 4px rgba(255,255,255,0.6) !important; border-radius: 30px !important; padding: 2px 2px 2px 10px !important; display: flex; align-items: center;
+      font-size: 24px;
+      font-weight: 900;
+      color: #ffd966;
+    }
+
+    /* ========== قائمة البنرات ========== */
+    .banners-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .banner {
+      gradient(145deg, #f8fafc, #e2ehh0) !important; border: none !important; box-shadow: inset 2px 2px 5px #ffffff, inset -2px -2px 5px #94a3b8, 3px 3px 8px rgba(0,0,0,0.1), -1px -1px 4px rgba(255,255,255,0.6) !important; border-radius: 30px !important; padding: 2px 2px 2px 10px !important; display: flex; align-items: center;
+      position: relative;
+      width: 100%;
+      padding: 12px 18px;
+      border-radius: 60px;
+      background: rgba(16, 22, 30, 0.95);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.7),
+                  0 0 0 1px rgba(255, 215, 100, 0.12) inset;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      opacity: 1;
+      cursor: pointer; /* إضافة مؤشر اليد */
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .banner:hover {
+      transform: scale(1.01);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 215, 100, 0.3) inset;
+    }
+
+    /* الإطار الخارجي المتحرك */
+    .banner::before {
+      content: '';
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      right: -3px;
+      bottom: -3px;
+      border-radius: 63px;
+      padding: 2px;
+      background: linear-gradient(45deg, #ffd700, #ff8c00, #ffd700, #ff8c00, #ffd700);
+      background-size: 300% 300%;
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      animation: borderRotate 4s linear infinite;
+      opacity: 0.8;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* الإطار الدائري للصورة */
+  
+    .avatar-wrapper {
+      
+      position: relative;
+      width: 58px;
+      height: 58px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 500;
+    }
+
+    /* الإطار الافتراضي (GIF) */
+    .avatar-frame {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('https://iili.io/BrLrf6v.gif');
+      background-size: cover;
+      background-position: center;
+      border-radius: 50%;
+      z-index: 1;
+    }
+
+    /* إطار مخصص من المتجر - يحل محل الـ GIF */
+    .avatar-frame.custom-frame {
+      background-image: none !important;
+    }
+
+    .avatar-frame.custom-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .user-photo {
+      
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      z-index: 2;
+      border: 1px solid rgba(255, 215, 100, 0.3);
+      background: #1a2332;
+    }
+
+    /* لمعة متحركة */
+    .banner::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 90%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.12),
+        transparent
+      );
+      transform: skewX(-25deg);
+      animation: shimmer 4s ease-in-out infinite;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .banner-content {
+      
+      flex: 1;
+      position: relative;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* النص العادي */
+    .banner-text {
+      
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-align: right;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    /* صورة الاسم من المتجر */
+    .banner-name-image {
+      height: 55px;
+      max-width: 200px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .banner-wealth {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #ffd966;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-right: 8px;
+    }
+
+    .banner-wealth i {
+      font-size: 0.9rem;
+    }
+
+    /* ألوان النصوص المختلفة (للنص العادي فقط) */
+    .banner:nth-child(8n+1) .banner-text { color: #ffd966; }
+    .banner:nth-child(8n+2) .banner-text { color: #c5a8e6; }
+    .banner:nth-child(8n+3) .banner-text { color: #a8d8ea; }
+    .banner:nth-child(8n+4) .banner-text { color: #f8b4b4; }
+    .banner:nth-child(8n+5) .banner-text { color: #b5ead7; }
+    .banner:nth-child(8n+6) .banner-text { color: #d4a5d4; }
+    .banner:nth-child(8n+7) .banner-text { color: #ffe29a; }
+    .banner:nth-child(8n+8) .banner-text { color: #a0d6ff; }
+
+    /* الترتيب */
+    .rank-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255, 215, 100, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #ffd966;
+      margin-left: 8px;
+      border: 1px solid rgba(255, 215, 100, 0.3);
+    }
+
+    /* تحميل */
+    .loading-spinner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 60px;
+    }
+
+    .loading-spinner i {
+      font-size: 40px;
+      color: #ffd966;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes borderRotate {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 300% 300%; }
+    }
+
+    @keyframes shimmer {
+      0% { left: -150%; }
+      30% { left: 150%; }
+      100% { left: 150%; }
+    }
+
+    /* ========== نافذة الملف الشخصي (مودال) ========== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      z-index: 3000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: 0.25s;
+    }
+
+    .modal-overlay.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .modal-sheet {
+      background: #000000;
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: scale(0.95);
+      transition: transform 0.3s ease;
+      box-shadow: 0 -10px 50px rgba(0,0,0,0.5);
+      padding: 20px 16px 30px;
+      border-radius: 30px 30px 0 0;
+      margin: auto;
+      color: #ffffff;
+      border: 1px solid #333;
+    }
+
+    @media (max-width: 500px) {
+      .modal-sheet {
+        max-width: 100%;
+        height: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+      }
+    }
+
+    .active .modal-sheet { transform: scale(1); }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #333;
+    }
+
+    .modal-header h3 { 
+      font-size: 20px; 
+      font-weight: 800; 
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .close-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 30px;
+      background: #333;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+
+    /* تنسيقات الملف الشخصي داخل المودال */
+    .profile-avatar-large {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      border: 3px solid #fbbf24;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .profile-avatar-large img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .user-id-badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 20px;
+      display: inline-block;
+    }
+
+    .id-1-digit {
+      color: #00ff00 !important;
+      font-weight: 900 !important;
+      text-shadow: 0 0 10px #00ff00;
+      border: 3px solid gold !important;
+      padding: 4px 12px !important;
+      border-radius: 30px;
+      background: linear-gradient(145deg, #1a1a2e, #16213e);
+    }
+
+    .id-2-digit {
+      color: #0088ff !important;
+      font-weight: 800 !important;
+      text-shadow: 0 0 8px #0088ff;
+      border: 3px solid #ff4500 !important;
+      padding: 4px 12px !important;
+      border-radius: 20px;
+      background: linear-gradient(145deg, #1e1e2f, #2a2a4a);
+    }
+
+    .id-3-digit {
+      color: #ff3333 !important;
+      font-weight: 800 !important;
+      border: 3px solid #87ceeb !important;
+      padding: 4px 12px !important;
+      border-radius: 25px;
+      background: linear-gradient(145deg, #1a1a2e, #16213e);
+    }
+
+    .verified-badge {
+      color: #3b82f6;
+      font-size: 14px;
+      margin-right: 4px;
+    }
+
+    .relationship-status {
+      background: #222;
+      border-radius: 30px;
+      padding: 5px 15px;
+      display: inline-block;
+      margin: 10px 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: #ddd;
+    }
+
+    .post-card {
+      background: #111;
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 12px;
+      border: 1px solid #333;
+      color: #fff;
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .post-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      border: 2px solid #fbbf24;
+      overflow: hidden;
+    }
+
+    .post-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .post-media img, .post-media iframe {
+      width: 100%;
+      max-height: 250px;
+      object-fit: cover;
+      border-radius: 16px;
+    }
+
+    .interact-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 14px;
+      border-radius: 30px;
+      background: #1e1e2f;
+      color: #ccc;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      border: none;
+    }
+
+    .interact-btn.liked { color: #e11d48; background: #2a1a1a; }
+
+    .post-interactions {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid #333;
+      padding-top: 12px;
+      margin-top: 4px;
+    }
+
+    /* توست */
+    #toastMsg {
+      position: fixed;
+      bottom: 30px;
+      left: 20px;
+      right: 20px;
+      background: #1e293b;
+      color: white;
+      padding: 14px 20px;
+      border-radius: 50px;
+      text-align: center;
+      z-index: 5000;
+      opacity: 0;
+      transition: 0.25s;
+      pointer-events: none;
+      max-width: 400px;
+      margin: 0 auto;
+      font-weight: 600;
+    }
+
+    #toastMsg.show {
+      opacity: 1;
+      bottom: 40px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 50px 20px;
+      color: #64748b;
+    }
+
+    .empty-state i {
+      font-size: 50px;
+      color: #ffd966;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="back-bt" onclick="goBak()">
+      <i class="fas fa-arrow-riht"></i>
+    </div>
+    <h1>
+      <i class="fas fa-crown"></i>الاثرياء
+      
+    </h1>
+    <div style="width: 45px;"></div>
+  </div>
+
+  <div id="richContainer">
+    <div class="loading-spinner">
+      <i class="fas fa-spinner"></i>
+    </div>
+  </div>
+</div>
+
+<!-- نافذة الملف الشخصي -->
+<div class="modal-overlay" id="profileModal">
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <h3>
+        <i class="fas fa-user" style="color: #fbbf24;"></i> 
+        <span id="profileModalUsername">الملف الشخصي</span>
+      </h3>
+      <div style="display: flex; gap: 10px;">
+        <button class="close-btn" onclick="closeModal('profileModal')">&times;</button>
+      </div>
+    </div>
+    <span onclick="closeModal('profileModal')" style="position: absolute; top: 15px; left: 15px; color: #fbbf24; font-size: 32px; font-weight: bold; cursor: pointer; z-index: 9999;">←</span>
+    <div id="profileDetails" style="padding: 15px; color: #fff;"></div>
+    
+    <!-- الأزرار (متابعة/مراسلة) -->
+    <div id="profileActions" style="padding: 0 15px 15px;"></div>
+    
+    <h4 style="margin: 0 15px 10px; color: #ccc; font-size: 14px;">
+      <i class="fas fa-newspaper"></i> المنشورات
+    </h4>
+    <div id="profilePostsContainer" style="padding: 0 10px 20px; max-height: 50vh; overflow-y: auto;"></div>
+  </div>
+</div>
+
+<div id="toastMsg"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+  import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, setDoc, query, where, arrayUnion, arrayRemove, increment, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCPBrZMo6IYCwCDYV3HEfNcUmLUITR6VRc",
+    authDomain: "elahbes.firebaseapp.com",
+    projectId: "elahbes",
+    storageBucket: "elahbes.firebasestorage.app",
+    messagingSenderId: "800207969145",
+    appId: "1:800207969145:web:aa19b725d1c92dd48fada8",
+    measurementId: "G-EFT566SJMP"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  let currentUser = null;
+  let currentUserData = null;
+  let richUsers = [];
+  let posts = [];
+  let followers = {};
+  let activeProfileUserId = null;
+  let unsubscribePosts = null;
+
+  function showToast(msg, isSuccess = true) {
+    const t = document.getElementById('toastMsg');
+    if (!t) return;
+    t.textContent = msg;
+    t.style.background = isSuccess ? '#10b981' : '#ef4444';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  window.closeModal = function(id) {
+    document.getElementById(id)?.classList.remove('active');
+  };
+
+  window.openModal = function(id) {
+    document.getElementById(id)?.classList.add('active');
+  };
+
+  window.goBack = function() {
+    if (document.referrer && document.referrer.includes(window.location.hostname)) {
+      window.history.back();
+    } else {
+      window.location.href = 'https://amanhsn55555-eng.github.io/Bage-1-chat/';
+    }
+  };
+
+  function formatNumber(num) {
+    if (num === undefined || num === null) return '0';
+    return num.toLocaleString('ar-EG');
+  }
+
+  function getIdClass(userId) {
+    if (!userId) return '';
+    const idStr = String(userId);
+    const digitCount = idStr.replace(/\D/g, '').length;
+    if (digitCount === 1) return 'id-1-digit';
+    if (digitCount === 2) return 'id-2-digit';
+    if (digitCount === 3) return 'id-3-digit';
+    return '';
+  }
+
+  function renderAvatar(user) {
+    if (!user) return '👤';
+    if (user.avatarType === 'image' && user.avatarUrl) {
+      return `<img src="${user.avatarUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" onerror="this.parentElement.innerHTML='👤'">`;
+    }
+    return user.emoji || '😎';
+  }
+
+  function isFollowing(userId) {
+    return followers[currentUser?.uid]?.includes(userId) || false;
+  }
+
+  // دالة عرض الصورة الشخصية للبنر
+  function renderUserPhoto(user) {
+    if (user.avatarType === 'image' && user.avatarUrl) {
+      return `<img src="${user.avatarUrl}" class="user-photo" onerror="this.src='https://iili.io/BrQxEoN.jpg'">`;
+    }
+    return `<img src="https://iili.io/BrQxEoN.jpg" class="user-photo">`;
+  }
+
+  // دالة عرض الإطار
+  function renderAvatarFrame(user) {
+    const customFrame = user.colors?.frame;
+    if (customFrame && customFrame !== '#0f172a' && customFrame.startsWith('http')) {
+      return `<div class="avatar-frame custom-frame"><img src="${customFrame}" alt="frame"></div>`;
+    } else {
+      return `<div class="avatar-frame"></div>`;
+    }
+  }
+
+  // دالة عرض الاسم
+  function renderUserName(user) {
+    const nameImage = user.nameImage;
+    const displayName = user.username || user.displayName || 'مستخدم';
+    if (nameImage && nameImage.startsWith('http')) {
+      return `<img src="${nameImage}" class="banner-name-image" alt="${displayName}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">`;
+    } else {
+      return `<span class="banner-text">${displayName}</span>`;
+    }
+  }
+
+  async function loadCurrentUserData(uid) {
+    try {
+      const userDoc = await getDoc(doc(db, "users", uid));
+      if (userDoc.exists()) {
+        currentUserData = userDoc.data();
+      }
+      const followersDoc = await getDoc(doc(db, "social", "followers"));
+      if (followersDoc.exists()) {
+        followers = followersDoc.data();
+      }
+    } catch (error) {
+      console.error("خطأ في تحميل بيانات المستخدم:", error);
+    }
+  }
+
+  function subscribeToPosts() {
+    if (unsubscribePosts) unsubscribePosts();
+    const postsQuery = query(collection(db, "posts"));
+    unsubscribePosts = onSnapshot(postsQuery, (snapshot) => {
+      posts = [];
+      snapshot.forEach(doc => {
+        posts.push({ id: doc.id, ...doc.data() });
+      });
+    });
+  }
+
+  async function loadRichUsers() {
+    try {
+      const usersSnap = await getDocs(collection(db, "users"));
+      const users = [];
+      usersSnap.forEach(doc => {
+        const data = doc.data();
+        users.push({
+          id: doc.id,
+          userId: data.userId || doc.id.substring(0, 6),
+          ...data
+        });
+      });
+
+      const resourcesSnap = await getDocs(collection(db, "resources"));
+      const moneyMap = {};
+      resourcesSnap.forEach(doc => {
+        const data = doc.data();
+        moneyMap[doc.id] = data.money || 0;
+      });
+
+      richUsers = users
+        .map(user => ({
+          ...user,
+          money: moneyMap[user.id] || 0
+        }))
+        .filter(user => user.money > 0)
+        .sort((a, b) => b.money - a.money)
+        .slice(0, 20);
+
+      renderRichList();
+    } catch (error) {
+      console.error('خطأ في تحميل البيانات:', error);
+      showToast('حدث خطأ في تحميل البيانات', false);
+      document.getElementById('richContainer').innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p>حدث خطأ في تحميل البيانات</p>
+        </div>
+      `;
+    }
+  }
+
+  function renderRichList() {
+    const container = document.getElementById('richContainer');
+    
+    if (!richUsers || richUsers.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-coins"></i>
+          <p>لا يوجد أثرياء بعد</p>
+        </div>
+      `;
+      return;
+    }
+
+    const totalWealth = richUsers.reduce((sum, u) => sum + u.money, 0);
+
+    let html = `
+      <div class="total-wealth">
+        <span class="total-wealth-label">
+          <i class="fas fa-coins"></i>
+          
+        </span>
+        <span class="total-wealth-value">${formatNumber(totalWealth)} </span>
+      </div>
+      <div class="banners-grid">
+    `;
+
+    richUsers.forEach((user, index) => {
+      const rank = index + 1;
+      
+      html += `
+        <div class="banner" onclick="window.openRichProfile('${user.userId}')">
+          <div class="avatar-wrapper">
+            ${renderAvatarFrame(user)}
+            ${renderUserPhoto(user)}
+          </div>
+          <div class="banner-content">
+            ${renderUserName(user)}
+            <div style="display: flex; align-items: center;">
+              <span class="rank-badge">${rank}</span>
+              <span class="banner-wealth">
+                <i class="fas fa-fire"></i>
+                ${formatNumber(user.money)}
+              </span>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+
+    html += `</div>`;
+    container.innerHTML = html;
+  }
+
+  // ========== دوال الملف الشخصي ==========
+  window.openRichProfile = async function(userId) {
+    activeProfileUserId = userId;
+    const isOwnProfile = userId === currentUserData?.userId;
+    
+    // جلب بيانات المستخدم
+    let userData = isOwnProfile ? currentUserData : null;
+    if (!userData) {
+      const usersSnapshot = await getDocs(query(collection(db, "users"), where("userId", "==", userId)));
+      if (!usersSnapshot.empty) {
+        userData = usersSnapshot.docs[0].data();
+      }
+    }
+    
+    if (!userData) {
+      userData = { 
+        userId: userId, 
+        username: 'مستخدم ' + userId, 
+        emoji: '👤', 
+        colors: { frame: '#fbbf24', name: '#ffffff', id: '#8b5cf6' },
+        bio: 'لا يوجد نبذة',
+        relationship: 'اعزب'
+      };
+    }
+
+    document.getElementById('profileModalUsername').innerText = userData.username || 'مستخدم';
+
+    // إحصائيات المتابعين
+    const userFollowers = [];
+    const userFollowing = [];
+    Object.entries(followers).forEach(([followerUid, followingList]) => {
+      if (followingList?.includes(userId)) userFollowers.push(followerUid);
+    });
+    if (followers[userId]) userFollowing.push(...followers[userId]);
+    
+    const isFollowed = isFollowing(userId);
+    const idClass = getIdClass(userId);
+    const isVerified = userData.verified || false;
+
+    const profileDetailsDiv = document.getElementById('profileDetails');
+    profileDetailsDiv.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+        <div class="profile-avatar-large" style="border-color: ${userData.colors?.frame || '#fbbf24'};">
+          ${renderAvatar(userData)}
+        </div>
+        <div style="flex: 1;">
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <h2 style="color: #ffffff; margin: 0; font-size: 20px; display: flex; align-items: center; gap: 5px;">
+              ${userData.username || 'مستخدم'}
+              ${isVerified ? '<i class="fas fa-check-circle verified-badge"></i>' : ''}
+            </h2>
+            <span class="user-id-badge ${idClass}" style="background: ${userData.colors?.frame || '#fbbf24'};">#${userData.userId || userId}</span>
+          </div>
+          ${userData.secondaryId ? `<p style="font-size:12px; color:#aaa; margin:5px 0 0;">@${userData.secondaryId}</p>` : ''}
+        </div>
+      </div>
+      
+      <div style="display: flex; gap: 30px; margin: 15px 0; justify-content: flex-start; border-top: 1px solid #333; border-bottom: 1px solid #333; padding: 12px 0;">
+        <div style="text-align: center;">
+          <i class="fas fa-image" style="font-size: 22px; color: #fff;"></i>
+          <div style="font-weight: bold; margin-top: 5px;">${posts.filter(p => p.userId === userId).length}</div>
+          <div style="font-size: 12px; color: #aaa;">منشورات</div>
+        </div>
+        <div style="text-align: center;">
+          <i class="fas fa-users" style="font-size: 22px; color: #fff;"></i>
+          <div style="font-weight: bold; margin-top: 5px;">${userFollowers.length}</div>
+          <div style="font-size: 12px; color: #aaa;">متابعين</div>
+        </div>
+        <div style="text-align: center;">
+          <i class="fas fa-user-plus" style="font-size: 22px; color: #fff;"></i>
+          <div style="font-weight: bold; margin-top: 5px;">${userFollowing.length}</div>
+          <div style="font-size: 12px; color: #aaa;">يتابع</div>
+        </div>
+      </div>
+
+      <p style="margin: 10px 0; color: #ddd; font-style: italic;">${userData.bio || 'لا يوجد نبذة'}</p>
+      
+      <div class="relationship-status">
+        <i class="fas fa-heart" style="color: #f59e0b;"></i> ${userData.relationship || 'اعزب'}
+      </div>
+    `;
+
+    // أزرار المتابعة والمراسلة
+    const actionsDiv = document.getElementById('profileActions');
+    if (isOwnProfile) {
+      actionsDiv.innerHTML = '';
+    } else {
+      actionsDiv.innerHTML = `
+        <div style="display: flex; gap: 10px;">
+          <button id="profileFollowBtn" onclick="window.followUserFromProfile()" style="flex:1; background:${isFollowed ? '#10b981' : '#4f46e5'}; color:white; border:none; padding:12px; border-radius:8px; font-weight:700; cursor:pointer;">
+            <i class="fas ${isFollowed ? 'fa-check' : 'fa-user-plus'}"></i> ${isFollowed ? 'متابَع' : 'متابعة'}
+          </button>
+          <button onclick="window.openPrivateChat()" style="flex:1; background:#0ea5e9; color:white; border:none; padding:12px; border-radius:8px; font-weight:700; cursor:pointer;">
+            <i class="fas fa-comment"></i> مراسلة
+          </button>
+        </div>
+      `;
+    }
+
+    renderProfilePosts(userId);
+    openModal('profileModal');
+  };
+
+  function renderProfilePosts(userId) {
+    const userPosts = posts.filter(p => p.userId === userId);
+    const container = document.getElementById('profilePostsContainer');
+    if (!container) return;
+    
+    if (userPosts.length === 0) { 
+      container.innerHTML = '<p style="text-align:center;color:#aaa;padding:30px;">لا توجد منشورات</p>'; 
+      return; 
+    }
+    
+    container.innerHTML = userPosts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).map(post => {
+      let mediaHtml = '';
+      if (post.mediaUrl) {
+        if (post.mediaType === 'image') {
+          mediaHtml = `<div class="post-media"><img src="${post.mediaUrl}" onerror="this.style.display='none'"></div>`;
+        } else if (post.mediaType === 'youtube') {
+          mediaHtml = `<div class="post-media"><iframe src="${post.mediaUrl}" frameborder="0" allowfullscreen></iframe></div>`;
+        }
+      }
+      return `
+      <div class="post-card">
+        <div class="post-header">
+          <div class="post-avatar" style="border-color:${post.colors?.frame || '#fbbf24'};">${renderAvatar(post)}</div>
+          <div style="flex:1;">
+            <div>
+              <strong style="color:#fff;">${post.username}</strong>
+              <span class="user-id-badge" style="background:${post.colors?.frame || '#fbbf24'};">#${post.userId}</span>
+            </div>
+            <small style="color:#aaa;">${post.timestamp ? new Date(post.timestamp).toLocaleString('ar-SA') : ''}</small>
+          </div>
+        </div>
+        <div style="color:#ddd; margin: 10px 0;">${post.content}</div>
+        ${mediaHtml}
+        <div class="post-interactions">
+          <div class="interact-btn ${(post.likedBy||[]).includes(currentUser?.uid) ? 'liked' : ''}" onclick="window.toggleLike('${post.id}')"><i class="fas fa-heart"></i> ${post.likes||0}</div>
+          <div class="interact-btn"><i class="fas fa-comment"></i> ${(post.comments||[]).length}</div>
+          <div class="interact-btn"><i class="fas fa-eye"></i> ${post.views||0}</div>
+        </div>
+      </div>
+    `}).join('');
+  }
+
+  window.followUserFromProfile = async function() {
+    if (!activeProfileUserId || !currentUser) return;
+    if (activeProfileUserId === currentUserData?.userId) { 
+      showToast('لا يمكنك متابعة نفسك', false); 
+      return; 
+    }
+    
+    if (!followers[currentUser.uid]) followers[currentUser.uid] = [];
+    const idx = followers[currentUser.uid].indexOf(activeProfileUserId);
+    
+    if (idx === -1) { 
+      followers[currentUser.uid].push(activeProfileUserId); 
+      showToast('✓ تمت المتابعة'); 
+    } else { 
+      followers[currentUser.uid].splice(idx, 1); 
+      showToast('تم إلغاء المتابعة'); 
+    }
+    
+    await setDoc(doc(db, "social", "followers"), { [currentUser.uid]: followers[currentUser.uid] }, { merge: true });
+    // تحديث زر المتابعة
+    const btn = document.getElementById('profileFollowBtn');
+    if (btn) {
+      const isFollowed = followers[currentUser.uid].includes(activeProfileUserId);
+      btn.style.background = isFollowed ? '#10b981' : '#4f46e5';
+      btn.innerHTML = `<i class="fas ${isFollowed ? 'fa-check' : 'fa-user-plus'}"></i> ${isFollowed ? 'متابَع' : 'متابعة'}`;
+    }
+  };
+
+  window.openPrivateChat = function() {
+    if (!activeProfileUserId) return;
+    window.open('https://amanhsn55555-eng.github.io/Msgtdy/', '_blank');
+    showToast('💬 جاري فتح المحادثة');
+  };
+
+  window.toggleLike = async function(postId) {
+    if (!currentUser) return;
+    const postRef = doc(db, "posts", postId);
+    const post = posts.find(p => p.id === postId);
+    if (!post) return;
+    
+    const liked = post.likedBy || [];
+    const isLiked = liked.includes(currentUser.uid);
+    
+    if (isLiked) {
+      await updateDoc(postRef, { likedBy: arrayRemove(currentUser.uid), likes: increment(-1) });
+    } else {
+      await updateDoc(postRef, { likedBy: arrayUnion(currentUser.uid), likes: increment(1) });
+    }
+  };
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      currentUser = user;
+      await loadCurrentUserData(user.uid);
+      subscribeToPosts();
+      await loadRichUsers();
+    } else {
+      document.getElementById('richContainer').innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-sign-in-alt"></i>
+          <p>يرجى تسجيل الدخول لعرض قائمة الأثرياء</p>
+        </div>
+      `;
+    }
+  });
+
+  // تعريض الدوال للنافذة
+  window.openRichProfile = openRichProfile;
+  window.followUserFromProfile = followUserFromProfile;
+  window.openPrivateChat = openPrivateChat;
+  window.toggleLike = toggleLike;
+</script>
+
+</body>
+</html>
