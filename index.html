@@ -694,6 +694,75 @@
       window.location.href = 'https://amanhsn55555-eng.github.io/Bage-1-chat/';
     }
   };
+  // ========== مركز الإعدادات ==========
+async function loadGlobalSettings() {
+  try {
+    const snap = await getDoc(doc(db, "admin_settings", "allow_posting"));
+    if (snap.exists()) window.GLOBAL_allowPosting = snap.data().value;
+    else window.GLOBAL_allowPosting = true;
+  } catch(e) { window.GLOBAL_allowPosting = true; }
+
+  try {
+    const snap = await getDoc(doc(db, "admin_settings", "allow_comments"));
+    window.GLOBAL_allowComments = snap.exists() ? snap.data().value : true;
+  } catch(e) { window.GLOBAL_allowComments = true; }
+
+  try {
+    const snap = await getDoc(doc(db, "admin_settings", "allow_stories"));
+    window.GLOBAL_allowStories = snap.exists() ? snap.data().value : true;
+  } catch(e) { window.GLOBAL_allowStories = true; }
+
+  try {
+    const snap = await getDoc(doc(db, "admin_settings", "allow_create_rooms"));
+    window.GLOBAL_allowCreateRooms = snap.exists() ? snap.data().value : true;
+  } catch(e) { window.GLOBAL_allowCreateRooms = true; }
+
+  try {
+    const snap = await getDoc(doc(db, "admin_settings", "registration_open"));
+    window.GLOBAL_registrationOpen = snap.exists() ? snap.data().value : true;
+  } catch(e) { window.GLOBAL_registrationOpen = true; }
+
+  // القيود
+  try {
+    const snap = await getDoc(doc(db, "admin_settings", "min_email_len"));
+    window.GLOBAL_minEmailLen = snap.exists() ? snap.data().value : 5;
+  } catch(e) { window.GLOBAL_minEmailLen = 5; }
+
+  try {
+    const snap = await getDoc(doc(db, "admin_settings", "min_pass_len"));
+    window.GLOBAL_minPassLen = snap.exists() ? snap.data().value : 6;
+  } catch(e) { window.GLOBAL_minPassLen = 6; }
+
+  try {
+    const snap = await getDoc(doc(db, "admin_settings", "banned_passwords"));
+    window.GLOBAL_bannedPasswords = snap.exists() ? snap.data().value : [];
+  } catch(e) { window.GLOBAL_bannedPasswords = []; }
+
+  // الموارد الافتراضية
+  try {
+    const snap = await getDoc(doc(db, "admin_settings", "default_money"));
+    window.GLOBAL_defaultMoney = snap.exists() ? snap.data().value : 1000;
+  } catch(e) { window.GLOBAL_defaultMoney = 1000; }
+  try {
+    const snap = await getDoc(doc(db, "admin_settings", "default_gold"));
+    window.GLOBAL_defaultGold = snap.exists() ? snap.data().value : 10;
+  } catch(e) { window.GLOBAL_defaultGold = 10; }
+  try {
+    const snap = await getDoc(doc(db, "admin_settings", "default_elixir"));
+    window.GLOBAL_defaultElixir = snap.exists() ? snap.data().value : 10;
+  } catch(e) { window.GLOBAL_defaultElixir = 10; }
+  try {
+    const snap = await getDoc(doc(db, "admin_settings", "default_oil"));
+    window.GLOBAL_defaultOil = snap.exists() ? snap.data().value : 10;
+  } catch(e) { window.GLOBAL_defaultOil = 10; }
+  try {
+    const snap = await getDoc(doc(db, "admin_settings", "default_ddo"));
+    window.GLOBAL_defaultDdo = snap.exists() ? snap.data().value : 0;
+  } catch(e) { window.GLOBAL_defaultDdo = 0; }
+}
+
+// استدعها عند بداية التطبيق
+loadGlobalSettings();
 
   function formatNumber(num) {
     if (num === undefined || num === null) return '0';
@@ -784,8 +853,8 @@
       usersSnap.forEach(doc => {
         const data = doc.data();
         users.push({
-          id: doc.id,
-          userId: data.userId || doc.id.substring(0, 6),
+          id: doc.id,           // هذا doc.id
+          userId: data.userId || doc.id.substring(0, 6),  // هذا userId المخزن
           ...data
         });
       });
@@ -797,14 +866,42 @@
         moneyMap[doc.id] = data.money || 0;
       });
 
-      richUsers = users
-        .map(user => ({
-          ...user,
-          money: moneyMap[user.id] || 0
-        }))
+      // تجميع كل المستخدمين مع فلوسهم
+      let allUsers = users.map(user => ({
+        ...user,
+        money: moneyMap[user.id] || 0
+      }));
+
+      // ترتيب وأخذ أول 20
+      richUsers = allUsers
         .filter(user => user.money > 0)
         .sort((a, b) => b.money - a.money)
         .slice(0, 20);
+
+      // ✅ تشخيص - نبحث عن حسابك بكل الطرق
+      if (currentUser) {
+        console.log('🔍 uid حقتك:', currentUser.uid);
+        console.log('🔍 uid من currentUserData:', currentUserData?.userId);
+        
+        // البحث في richUsers
+        const foundById = richUsers.find(u => u.id === currentUser.uid);
+        const foundByUserId = richUsers.find(u => u.userId === currentUserData?.userId);
+        const foundByEmail = richUsers.find(u => u.email === currentUser.email);
+        
+        console.log('🔍 البحث بـ id === uid:', foundById ? '✅ لقيناك' : '❌ ما لقيناك');
+        console.log('🔍 البحث بـ userId:', foundByUserId ? '✅ لقيناك' : '❌ ما لقيناك');
+        console.log('🔍 البحث بـ email:', foundByEmail ? '✅ لقيناك' : '❌ ما لقيناك');
+        
+        // البحث في كل المستخدمين
+        const allFoundById = allUsers.find(u => u.id === currentUser.uid);
+        if (allFoundById) {
+          console.log('💰 فلوسك:', formatNumber(allFoundById.money));
+          console.log('📊 ترتيبك:', allUsers.filter(u => u.money > 0).sort((a, b) => b.money - a.money).findIndex(u => u.id === currentUser.uid) + 1);
+        }
+        
+        // طباعة أول 5 مستخدمين للمقارنة
+        console.log('📋 أول 5 في القائمة:', richUsers.slice(0, 5).map(u => ({id: u.id, userId: u.userId, name: u.username, money: u.money})));
+      }
 
       renderRichList();
     } catch (error) {
@@ -818,8 +915,7 @@
       `;
     }
   }
-
-  function renderRichList() {
+function renderRichList() {
     const container = document.getElementById('richContainer');
     
     if (!richUsers || richUsers.length === 0) {
@@ -848,17 +944,31 @@
     richUsers.forEach((user, index) => {
       const rank = index + 1;
       
+      // ✅ فحص بكل الطرق
+      const isMe = currentUser && (
+        user.id === currentUser.uid ||
+        user.userId === currentUserData?.userId ||
+        user.email === currentUser.email
+      );
+      
+      console.log(`👤 ${user.username || 'مستخدم'} - id: ${user.id} - userId: ${user.userId} - isMe: ${isMe}`);
+      
+      const myBadge = isMe ? ' <span style="background: linear-gradient(135deg, #ffd700, #ffaa00); color: #000; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 900; margin-right: 5px; display: inline-block; box-shadow: 0 0 15px rgba(255,215,0,0.6);">⭐ أنت</span>' : '';
+      
       html += `
-        <div class="banner" onclick="window.openRichProfile('${user.userId}')">
+        <div class="banner" onclick="window.openRichProfile('${user.userId}')" ${isMe ? 'style="box-shadow: 0 0 30px rgba(255,215,0,0.7), 0 0 60px rgba(255,215,0,0.3), 0 0 0 2px gold !important; border: 2px solid gold !important;"' : ''}>
           <div class="avatar-wrapper">
             ${renderAvatarFrame(user)}
             ${renderUserPhoto(user)}
           </div>
           <div class="banner-content">
-            ${renderUserName(user)}
+            <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 5px;">
+              ${renderUserName(user)}
+              ${myBadge}
+            </div>
             <div style="display: flex; align-items: center;">
-              <span class="rank-badge">${rank}</span>
-              <span class="banner-wealth">
+              <span class="rank-badge" style="${isMe ? 'background: gold !important; color: #000 !important; font-weight: 900 !important; border: 2px solid #ff8c00 !important;' : ''}">${rank}</span>
+              <span class="banner-wealth" style="${isMe ? 'color: #ffd700 !important; text-shadow: 0 0 10px rgba(255,215,0,0.8) !important;' : ''}">
                 <i class="fas fa-fire"></i>
                 ${formatNumber(user.money)}
               </span>
@@ -871,8 +981,6 @@
     html += `</div>`;
     container.innerHTML = html;
   }
-
-  // ========== دوال الملف الشخصي ==========
   window.openRichProfile = async function(userId) {
     activeProfileUserId = userId;
     const isOwnProfile = userId === currentUserData?.userId;
