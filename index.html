@@ -662,6 +662,38 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
+  // ========== نظام الكاش التلقائي للأثرياء (24 ساعة) ==========
+const RICH_CACHE_KEY = 'rich_ui_cache';
+const RICH_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 ساعة
+
+const RichCache = {
+  save(html) {
+    try {
+      const cache = { html, timestamp: Date.now() };
+      localStorage.setItem(RICH_CACHE_KEY, JSON.stringify(cache));
+    } catch (e) {}
+  },
+  load() {
+    try {
+      const cached = localStorage.getItem(RICH_CACHE_KEY);
+      if (!cached) return null;
+      const { html, timestamp } = JSON.parse(cached);
+      if (Date.now() - timestamp > RICH_CACHE_DURATION) {
+        localStorage.removeItem(RICH_CACHE_KEY);
+        return null;
+      }
+      return html;
+    } catch (e) { return null; }
+  }
+};
+
+// ✅ عرض الكاش فوراً عند فتح الصفحة
+(function() {
+  const cached = RichCache.load();
+  if (cached) {
+    document.getElementById('richContainer').innerHTML = cached;
+  }
+})();
   let currentUser = null;
   let currentUserData = null;
   let richUsers = [];
@@ -904,7 +936,15 @@ loadGlobalSettings();
       }
 
       renderRichList();
-    } catch (error) {
+  
+  // ✅ تجديد الكاش تلقائياً
+  setTimeout(() => {
+    const container = document.getElementById('richContainer');
+    if (container && container.innerHTML.includes('banner')) {
+      RichCache.save(container.innerHTML);
+    }
+  }, 2000);
+} catch (error) {
       console.error('خطأ في تحميل البيانات:', error);
       showToast('حدث خطأ في تحميل البيانات', false);
       document.getElementById('richContainer').innerHTML = `
@@ -979,8 +1019,14 @@ function renderRichList() {
     });
 
     html += `</div>`;
-    container.innerHTML = html;
-  }
+  
+      container.innerHTML = html;
+  
+  // ✅ حفظ تلقائي في الكاش
+  
+  // ✅ حفظ تلقائي في الكاش
+  RichCache.save(html);
+}
   window.openRichProfile = async function(userId) {
     activeProfileUserId = userId;
     const isOwnProfile = userId === currentUserData?.userId;
